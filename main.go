@@ -1,13 +1,10 @@
 package main
 
 import (
-	"fmt"
-	"log/syslog"
+	"log"
 	"os"
 	"runtime"
 	"unsafe"
-
-	"github.com/sirupsen/logrus"
 )
 
 func is_64() bool {
@@ -16,19 +13,14 @@ func is_64() bool {
 	} else if unsafe.Sizeof(uintptr(0)) == 4 {
 		return false
 	} else {
-		fmt.Println("Unknow system arch")
+		log.Fatal("Unknow system arch")
 		os.Exit(-9)
 	}
+	return false
 }
 func main() {
-	logger := logrus.New()
-	syslogHook, err := logrus_syslog.NewSyslogHook("", "", syslog.LOG_INFO, "")
-	if err != nil {
-		logger.Fatal("Unable to create syslog hook:", err)
-	}
-
-	fmt.Println("Zygisk run on", runtime.GOARCH)
+	log.Println("Zygisk run on", runtime.GOARCH)
 	zygiskv := os.Getenv("ZKSU_VERSION")
-	fmt.Println("zygsik version", zygiskv)
-	loadmoudle(runtime.GOARCH)
+	log.Println("zygsik version", zygiskv)
+	Loadmoudle(runtime.GOARCH)
 }

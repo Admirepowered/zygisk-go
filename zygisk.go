@@ -1,5 +1,5 @@
 package main
 
-func loadmoudle(arch string) {
+func Loadmoudle(arch string) {
 
 }

@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"runtime"
 	"unsafe"
-	"github.com/Admirepowered/zygisk-go/util"
 )
 
 func Is_64() bool {
@@ -20,6 +20,19 @@ func Is_64() bool {
 		os.Exit(-9)
 	}
 	return false
+}
+func Get_arch() string {
+	cmd := "getprop ro.product.cpu.abi"
+
+	// 执行命令
+	output, err := exec.Command(cmd).Output()
+	if err != nil {
+		log.Println("command failed:", err)
+		os.Exit(-8)
+		return ""
+	}
+	return string(output)
+
 }
 func main() {
 	root := "magisk"

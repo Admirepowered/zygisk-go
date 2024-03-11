@@ -17,7 +17,6 @@ func Switch_mount_namespace(pid int) error {
 	if err != nil {
 		return err
 	}
-
 	if err := unix.Setns(int(mnt.Fd()), unix.CLONE_NEWNS); err != nil {
 		return err
 	}

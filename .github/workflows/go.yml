@@ -7,6 +7,11 @@ on:
   pull_request:
     branches: [ main ]
   workflow_dispatch:
+    inputs:
+        release:
+          description: 'Push a new release'
+          required: false
+          default: 'false'
 
 
 jobs:
@@ -37,14 +42,17 @@ jobs:
     - name: Build linux-arm64
       run: CGO_ENABLED=0 GOOS=linux GOARCH=arm64  go build -o ./package/main-linux-arm64 ./
 
-
+    - name: Upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: zygisk-arm64
+        path: './package/*'
 
     - name: Release
+      if: github.event.inputs.release == 'true' && success() && !cancelled()
       uses: softprops/action-gh-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            
-    
       with:
         tag_name: ${{ steps.parse_version.outputs.VERSION }}
         release_name: zygisk-arm64

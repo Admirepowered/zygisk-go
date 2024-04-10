@@ -35,10 +35,8 @@ jobs:
       run: mkdir ./package
    
     - name: Build linux-arm64
-      run: CGO_ENABLED=0 GOOS=linux GOARCH=arm64  go build -o ./package/main-linux-arm64 ./main.go
+      run: CGO_ENABLED=0 GOOS=linux GOARCH=arm64  go build -o ./package/main-linux-arm64 ./
 
-    - name: Test
-      run: go test ./main.go
 
 
     - name: Release

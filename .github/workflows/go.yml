@@ -1,0 +1,54 @@
+name: Go
+
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17.3
+    - name: go tidy
+      run: |
+        go mod tidy
+
+    - name: Generate version
+      id: parse_version
+      run: |
+        COMMIT_NUM=$(git rev-list --count HEAD)
+        VERSION=$(echo "$COMMIT_NUM + 200 + 10000" | bc)
+        echo "Generated Version: $VERSION"
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+    - name: mkdir
+      run: mkdir ./package
+   
+    - name: Build linux-arm64
+      run: CGO_ENABLED=0 GOOS=linux GOARCH=arm64  go build -o ./package/main-linux-arm64 ./main.go
+
+    - name: Test
+      run: go test ./main.go
+
+
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ steps.parse_version.outputs.VERSION }}
+    
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: ${{ github.ref }}
+        files: |
+           ./package/main-linux-arm64
+        draft: false

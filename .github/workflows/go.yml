@@ -27,7 +27,7 @@ jobs:
       id: parse_version
       run: |
         COMMIT_NUM=$(git rev-list --count HEAD)
-        VERSION=$(echo "$COMMIT_NUM + 200 + 10000" | bc)
+        VERSION=$(echo "$COMMIT_NUM + 2" | bc)
         echo "Generated Version: $VERSION"
         echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
@@ -42,11 +42,12 @@ jobs:
     - name: Release
       uses: softprops/action-gh-release@v1
       env:
-        GITHUB_TOKEN: ${{ steps.parse_version.outputs.VERSION }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            
     
       with:
-        tag_name: ${{ github.ref }}
-        release_name: ${{ github.ref }}
+        tag_name: ${{ steps.parse_version.outputs.VERSION }}
+        release_name: zygisk-arm64
         files: |
            ./package/main-linux-arm64
         draft: false
